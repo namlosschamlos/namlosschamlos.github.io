@@ -1,0 +1,58 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "business": "bim"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.4061,
+            52.5172
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "business": "dlr"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.5091,
+            52.4169
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "business": "mazars"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.3413,
+            52.5242
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "business": "enbw"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.4292,
+            49.0046
+          ]
+        }
+      }
+    ]
+  }
+  
