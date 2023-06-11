@@ -3,12 +3,12 @@ const mapContainer = document.querySelector(".map")
 const buttonContainer = document.querySelector(".button-bar")
 const allBtns = document.querySelectorAll(".btn")
 const germanStatesURL = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
+const workJsonUrl = "https://raw.githubusercontent.com/namlosschamlos/namlosschamlos.github.io/main/jobs.json"
 
 let clickedButton = [];
 
-let jsonResponse
 let germanStates;
-
+let workLayer;
 
 fetch(germanStatesURL)
   .then(response => response.json())
@@ -20,11 +20,41 @@ fetch(germanStatesURL)
         return { color: "white" };
       }
     }).addTo(map)
-    map.setZoom(10)
+    map.fitBounds(germanStates.getBounds())
   })
   .catch(error => {
     console.log("Fehler beim Laden der JSON-Daten:", error);
   });
+
+let jobsJson; // Variable zum Speichern der GeoJSON-Daten
+
+fetch(workJsonUrl)
+  .then(response => response.json())
+  .then(data => {
+    jobsJson = data; // Speichern der GeoJSON-Daten in der Variable
+    console.log('GeoJSON-Daten wurden erfolgreich geladen:', jobsJson);
+    workLayer = L.geoJSON(jobsJson, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+          radius: 8,
+          color: "green",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.8
+        });
+      }
+    })
+
+    // Weitere Verarbeitung der GeoJSON-Daten...
+  })
+  
+  .catch(error => {
+    console.log('Fehler beim Laden der GeoJSON-Daten:', error);
+  });
+
+// Du kannst die Variable geojsonData später verwenden
+// um auf die geladenen Daten zuzugreifen
+
 
 
 function zoomToMapExtent() {
@@ -42,7 +72,7 @@ function addWorkLayer(){
   map.removeLayer(educationLayer)
   workLayer.addTo(map)
   loopThroughLayer(workLayer)
-  map.fitBounds(workLayer.getBounds())
+  map.fitBounds(workLayer.getBounds()).setZoom(5)
 }
 
 function startButton(attribute) {
@@ -116,80 +146,10 @@ allBtns.forEach(function (btn) {
   })
 })
 
-
-const testGeoJson = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [13.438998, 52.523405]
-      },
-      "properties": {
-        "name": "Berliner Immobilienmanagement GmbH",
-        "address": "Werneuchener Str. 27, 13055 Berlin",
-        "job_title": "GIS Entwickler",
-        "job_position": "Angestellter",
-        "img_link:": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/DLR_Logo.svg/1024px-DLR_Logo.svg.png"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [13.402085, 52.414654]
-      },
-      "properties": {
-        "name": "Deutsches Luft- und Raumfahrtzentrum",
-        "address": "Rutherfordstraße 2, 12489 Berlin",
-        "job_position": "Praktikant",
-        "job_title": "Praktikum",
-        "img_link": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/DLR_Logo.svg/1024px-DLR_Logo.svg.png"
-      }
-    }
-  ]
-}
-
-const anotherGeoJson = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [13.438998, 52.523405]
-      },
-      "properties": {
-        "name": "Berliner Immobilienmanagement GmbH",
-        "address": "Werneuchener Str. 27, 13055 Berlin",
-        "job_title": "GIS Entwickler",
-        "job_position": "Angestellter",
-        "img_link:": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/DLR_Logo.svg/1024px-DLR_Logo.svg.png"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [13.402085, 52.414654]
-      },
-      "properties": {
-        "name": "Deutsches Luft- und Raumfahrtzentrum",
-        "address": "Rutherfordstraße 2, 12489 Berlin",
-        "job_position": "Praktikant",
-        "job_title": "Praktikum",
-        "img_link": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/DLR_Logo.svg/1024px-DLR_Logo.svg.png"
-      }
-    }
-  ]
-}
-
-
 function loopThroughLayer(layerName){
   layerName.eachLayer(function(layer){
     let featureColor = layer.options.color
-    let featureDescribtion = layer.feature.properties.job_title
+    let featureDescribtion = layer.feature.properties.business
     createRow(featureColor,featureDescribtion)
   })
 }
@@ -236,22 +196,6 @@ var map = L.map("map", {
   dragging: false
 })
 
-
-
-const workLayer = L.geoJSON(testGeoJson, {
-  onEachFeature(feature) {
-    feature.properties.featureID = "work"
-  },
-  pointToLayer: function (feature, latlng) {
-    return L.circleMarker(latlng, {
-      radius: 8,
-      color: "green",
-      weight: 1,
-      opacity: 1,
-      fillOpacity: 0.8
-    });
-  }
-})
 
 const educationLayer = L.geoJSON(anotherGeoJson, {
   onEachFeature(feature) {
