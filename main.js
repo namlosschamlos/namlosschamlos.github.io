@@ -17,10 +17,10 @@ fetch(germanStatesURL)
     console.log("JSON-Daten wurden erfolgreich geladen:", jsonResponse);
     germanStates = L.geoJSON(jsonResponse, {
       style: function (feature) {
-        return { color: "red" };
+        return { color: "white" };
       }
     }).addTo(map)
-    map.fitBounds(germanStates.getBounds())
+    map.setZoom(10)
   })
   .catch(error => {
     console.log("Fehler beim Laden der JSON-Daten:", error);
