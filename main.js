@@ -2,13 +2,33 @@ const abtBtn = document.getElementById("abt")
 const mapContainer = document.querySelector(".map")
 const buttonContainer = document.querySelector(".button-bar")
 const allBtns = document.querySelectorAll(".btn")
-const urlGitBundeslaender = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/1_sehr_hoch.geo.json?callback=?"
+const germanStatesURL = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
 
 let clickedButton = [];
 
+let jsonResponse
+let germanStates;
+
+
+fetch(germanStatesURL)
+  .then(response => response.json())
+  .then(data => {
+    jsonResponse = data;
+    console.log("JSON-Daten wurden erfolgreich geladen:", jsonResponse);
+    germanStates = L.geoJSON(jsonResponse, {
+      style: function (feature) {
+        return { color: "red" };
+      }
+    }).addTo(map)
+    map.fitBounds(germanStates.getBounds())
+  })
+  .catch(error => {
+    console.log("Fehler beim Laden der JSON-Daten:", error);
+  });
+
 
 function zoomToMapExtent() {
-  map.fitBounds(layerBundeslaender.getBounds())
+  map.fitBounds(germanStates.getBounds())
 }
 
 function addEducationLayer(){
@@ -289,12 +309,6 @@ var map = L.map("map", {
 })
 
 
-const layerBundeslaender = L.geoJSON(germanyGeoJson, {
-  style: function (feature) {
-    return { color: "red" };
-  }
-}).addTo(map)
-
 
 const workLayer = L.geoJSON(testGeoJson, {
   onEachFeature(feature) {
@@ -326,11 +340,8 @@ const educationLayer = L.geoJSON(anotherGeoJson, {
   }
 })
 
-setBundeslaenderExtent()
 
 function setBundeslaenderExtent() {
-  bounds = layerBundeslaender.getBounds()
+  bounds = germanStates.getBounds()
   map.fitBounds(bounds)
 }
-
-groupLayer = L.layerGroup([workLayer, educationLayer])
